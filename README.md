@@ -50,12 +50,25 @@ cd nextjs_vtu
 npm install
 ```
 
-3. Run the development server:
+3. Configure environment variables:
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your VTU.ng API credentials:
+```env
+VTU_BASE_URL=https://vtu.ng/wp-json
+VTU_USERNAME=your_username_here
+VTU_PASSWORD=your_password_here
+VTU_USER_PIN=your_pin_here
+```
+
+4. Run the development server:
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ### Build for Production
 
@@ -114,6 +127,211 @@ Each service has a dedicated page with:
 - Input fields for transaction details
 - Quick amount/plan selectors
 - Helpful information cards
+
+## VTU.ng API Integration
+
+This project includes a complete integration with the VTU.ng API v2, providing backend functionality for purchasing digital services.
+
+### Environment Variables
+
+Required environment variables (see `.env.example`):
+
+- `VTU_BASE_URL` - Base URL for VTU.ng API (https://vtu.ng/wp-json)
+- `VTU_USERNAME` - Your VTU.ng account username
+- `VTU_PASSWORD` - Your VTU.ng account password
+- `VTU_USER_PIN` - Your VTU.ng user PIN for transaction authorization
+
+### API Routes
+
+The following API routes are available for server-side integration:
+
+#### Balance
+```bash
+# Get account balance
+curl -X GET http://localhost:3000/api/vtu/balance
+```
+
+#### Airtime Purchase
+```bash
+# Purchase airtime
+curl -X POST http://localhost:3000/api/vtu/airtime \
+  -H "Content-Type: application/json" \
+  -d '{
+    "network": "mtn",
+    "phone": "08012345678",
+    "amount": 100
+  }'
+```
+
+#### Data Purchase
+```bash
+# Purchase data bundle
+curl -X POST http://localhost:3000/api/vtu/data \
+  -H "Content-Type: application/json" \
+  -d '{
+    "network": "mtn",
+    "phone": "08012345678",
+    "variation_code": "mtn-1gb"
+  }'
+```
+
+#### Get Variations
+```bash
+# Get data variations
+curl -X GET "http://localhost:3000/api/vtu/variations?service_type=data"
+
+# Get TV variations
+curl -X GET "http://localhost:3000/api/vtu/variations?service_type=tv"
+```
+
+#### Verify Customer
+```bash
+# Verify customer details (for TV, electricity, etc.)
+curl -X POST http://localhost:3000/api/vtu/verify-customer \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service_type": "dstv",
+    "billersCode": "1234567890",
+    "variation_code": "dstv-compact"
+  }'
+```
+
+#### Electricity Purchase
+```bash
+# Purchase electricity token
+curl -X POST http://localhost:3000/api/vtu/electricity \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service_type": "ikeja-electric",
+    "billersCode": "1234567890",
+    "variation_code": "prepaid",
+    "amount": 5000,
+    "phone": "08012345678"
+  }'
+```
+
+#### Betting
+```bash
+# Fund betting account
+curl -X POST http://localhost:3000/api/vtu/betting \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service_type": "betway",
+    "billersCode": "1234567890",
+    "amount": 1000,
+    "phone": "08012345678"
+  }'
+```
+
+#### TV Subscription
+```bash
+# Purchase TV subscription
+curl -X POST http://localhost:3000/api/vtu/tv \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service_type": "dstv",
+    "billersCode": "1234567890",
+    "variation_code": "dstv-compact",
+    "phone": "08012345678"
+  }'
+```
+
+#### E-pins
+```bash
+# Purchase e-pins
+curl -X POST http://localhost:3000/api/vtu/epins \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service_type": "waec",
+    "amount": 3500,
+    "quantity": 1
+  }'
+```
+
+#### Requery Transaction
+```bash
+# Check transaction status
+curl -X POST http://localhost:3000/api/vtu/requery \
+  -H "Content-Type: application/json" \
+  -d '{
+    "request_id": "transaction_request_id"
+  }'
+```
+
+### Using the API with Node.js
+
+Example using the `fetch` API in Node.js:
+
+```javascript
+// Get balance
+const balanceResponse = await fetch('http://localhost:3000/api/vtu/balance');
+const balanceData = await balanceResponse.json();
+console.log(balanceData);
+
+// Purchase airtime
+const airtimeResponse = await fetch('http://localhost:3000/api/vtu/airtime', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    network: 'mtn',
+    phone: '08012345678',
+    amount: 100,
+  }),
+});
+const airtimeData = await airtimeResponse.json();
+console.log(airtimeData);
+```
+
+### Response Format
+
+All API routes return a consistent response format:
+
+**Success Response:**
+```json
+{
+  "success": true,
+  "data": {
+    // Response data from VTU.ng API
+  }
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "error": "Error message"
+}
+```
+
+### VTU Client Library
+
+The VTU client library is available in `lib/vtuClient.ts` and can be used directly in your server-side code:
+
+```typescript
+import { getVTUClient } from '@/lib/vtuClient';
+
+// Get client instance (uses environment variables)
+const client = getVTUClient();
+
+// Get balance
+const balance = await client.getBalance();
+
+// Purchase airtime
+const result = await client.purchaseAirtime({
+  network: 'mtn',
+  phone: '08012345678',
+  amount: 100,
+});
+```
+
+The client handles:
+- JWT authentication with automatic token refresh
+- Token caching to minimize API calls
+- Type-safe API requests with TypeScript
+- Error handling
 
 ## Design Philosophy
 
