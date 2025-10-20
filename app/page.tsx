@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import ServiceCard from '@/components/ServiceCard';
 import QuickActions from '@/components/QuickActions';
 import RecentTransactions from '@/components/RecentTransactions';
+import WalletCard from '@/components/WalletCard';
 
 export default function Home() {
   const services = [
@@ -77,27 +78,7 @@ export default function Home() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Balance Card */}
-        <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white mb-6 shadow-lg">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <p className="text-sm opacity-90 mb-1">Wallet Balance</p>
-              <h2 className="text-3xl font-bold">₦0.00</h2>
-            </div>
-            <button className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/30 transition">
-              Fund Wallet
-            </button>
-          </div>
-          <div className="flex gap-3 mt-4">
-            <div className="flex-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
-              <p className="text-xs opacity-90">Bonus</p>
-              <p className="font-semibold">₦0.00</p>
-            </div>
-            <div className="flex-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
-              <p className="text-xs opacity-90">Referrals</p>
-              <p className="font-semibold">0</p>
-            </div>
-          </div>
-        </div>
+        <WalletCard />
 
         {/* Quick Actions */}
         <QuickActions />
