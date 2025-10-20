@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getVTUClient } from '@/lib/vtuClient';
+import { validateApiKey } from '@/lib/apiKeyValidation';
 
 export async function GET(request: NextRequest) {
   try {
+    // Validate API key
+    if (!validateApiKey(request)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Unauthorized: Invalid or missing API key',
+        },
+        { status: 401 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const serviceType = searchParams.get('service_type');
     

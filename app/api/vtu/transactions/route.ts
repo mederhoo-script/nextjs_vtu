@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getVTUClient } from '@/lib/vtuClient';
 import { validateApiKey } from '@/lib/apiKeyValidation';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     // Validate API key
     if (!validateApiKey(request)) {
@@ -15,24 +15,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
-    
-    // Validate required fields
-    if (!body.network || !body.phone || !body.variation_code) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Missing required fields: network, phone, variation_code',
-        },
-        { status: 400 }
-      );
-    }
+    const searchParams = request.nextUrl.searchParams;
+    const page = searchParams.get('page');
+    const limit = searchParams.get('limit');
+    const status = searchParams.get('status');
 
     const client = getVTUClient();
-    const result = await client.purchaseData({
-      network: body.network,
-      phone: body.phone,
-      variation_code: body.variation_code,
+    const result = await client.getTransactionHistory({
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+      status: status || undefined,
     });
     
     return NextResponse.json({
@@ -40,11 +32,11 @@ export async function POST(request: NextRequest) {
       data: result,
     });
   } catch (error) {
-    console.error('Data API error:', error);
+    console.error('Transaction history API error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to purchase data',
+        error: error instanceof Error ? error.message : 'Failed to fetch transaction history',
       },
       { status: 500 }
     );
