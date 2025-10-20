@@ -72,7 +72,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -104,7 +104,7 @@ export default function Home() {
 
         {/* Services Grid */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">Our Services</h2>
+          <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Our Services</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {services.map((service) => (
               <ServiceCard key={service.id} {...service} />
@@ -126,21 +126,21 @@ export default function Home() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-lg md:hidden transition-colors">
         <div className="flex justify-around py-3">
           <button className="flex flex-col items-center gap-1 text-purple-600">
             <span className="text-xl">🏠</span>
             <span className="text-xs font-medium">Home</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-gray-500">
+          <button className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400">
             <span className="text-xl">📊</span>
             <span className="text-xs">History</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-gray-500">
+          <button className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400">
             <span className="text-xl">💰</span>
             <span className="text-xs">Wallet</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-gray-500">
+          <button className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400">
             <span className="text-xl">👤</span>
             <span className="text-xs">Profile</span>
           </button>

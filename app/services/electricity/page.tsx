@@ -9,24 +9,24 @@ export default function ElectricityPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
+      <header className="bg-white dark:bg-gray-900 shadow-sm transition-colors">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
-            <Link href="/" className="mr-4 text-gray-600 hover:text-gray-900">
+            <Link href="/" className="mr-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
               ← Back
             </Link>
-            <h1 className="text-xl font-bold text-gray-900">Electricity Bills</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Electricity Bills</h1>
           </div>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors">
           <form className="space-y-6">
             {/* Provider Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 Select Electricity Provider
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -34,12 +34,12 @@ export default function ElectricityPage() {
                   <button
                     key={provider.name}
                     type="button"
-                    className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 transition"
+                    className="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-purple-500 transition"
                   >
                     <div className={`w-12 h-12 ${provider.color} rounded-full flex items-center justify-center text-2xl`}>
                       {provider.icon}
                     </div>
-                    <span className="text-sm font-medium">{provider.name}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{provider.name}</span>
                   </button>
                 ))}
               </div>
@@ -47,7 +47,7 @@ export default function ElectricityPage() {
 
             {/* Meter Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 Meter Type
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -70,27 +70,27 @@ export default function ElectricityPage() {
 
             {/* Meter Number */}
             <div>
-              <label htmlFor="meter" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="meter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Meter Number
               </label>
               <input
                 type="text"
                 id="meter"
                 placeholder="12345678901"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400"
               />
             </div>
 
             {/* Amount */}
             <div>
-              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Amount
               </label>
               <input
                 type="number"
                 id="amount"
                 placeholder="₦1000"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400"
               />
               <div className="flex gap-2 mt-3">
                 {[1000, 2000, 5000, 10000].map((amount) => (
@@ -117,8 +117,8 @@ export default function ElectricityPage() {
 
         {/* Info Card */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">💡 Payment Info</h3>
-          <ul className="text-sm text-blue-800 space-y-1">
+          <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">💡 Payment Info</h3>
+          <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
             <li>• Token delivered instantly after payment</li>
             <li>• Verify meter number before payment</li>
             <li>• Keep token safe for meter recharge</li>

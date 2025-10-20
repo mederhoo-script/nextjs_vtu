@@ -16,6 +16,7 @@ A modern Virtual Top-Up (VTU) platform built with Next.js 15, TypeScript, and Ta
 
 ### User Interface Features
 - **Modern Design** - Clean, intuitive interface inspired by OPay/PalmPay
+- **Dark/Light Mode** - Professional color theme switcher with persistent preference
 - **Responsive Layout** - Works seamlessly on desktop, tablet, and mobile devices
 - **Wallet System** - View balance, bonus, and referral information
 - **Quick Actions** - Fast access to frequently used features
@@ -341,6 +342,49 @@ The platform follows modern fintech app design principles:
 - **Mobile-First** - Optimized for mobile devices with bottom navigation
 - **Fast** - Built with Next.js for optimal performance
 - **Accessible** - Clear typography and intuitive navigation
+- **Theme Support** - Professional dark and light modes for comfortable viewing
+
+## Theme Switching
+
+The application features a professional color theme switcher that allows users to toggle between light and dark modes.
+
+### Features
+- **Toggle Button** - Easily accessible theme switch button in the header with sun/moon icons
+- **Persistent Preference** - Theme choice is saved in localStorage and persists across sessions
+- **System Preference** - Defaults to system/browser preference if no choice is stored
+- **Smooth Transitions** - CSS transitions provide smooth color changes when switching themes
+- **Universal Support** - All pages and components respect the chosen theme
+
+### Usage
+Click the theme toggle button in the top-right corner of the header to switch between light and dark modes. Your preference will be automatically saved.
+
+### For Developers
+The theme system is implemented using:
+- **React Context** - `ThemeProvider` in `contexts/ThemeContext.tsx` manages theme state
+- **Tailwind CSS** - Class-based dark mode strategy with `dark:` prefix classes
+- **localStorage** - Stores user preference with key `theme`
+- **Custom Hook** - `useTheme()` hook provides theme state and toggle function
+
+To add dark mode support to new components:
+```tsx
+// Use Tailwind's dark: prefix for dark mode styles
+<div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+  Content
+</div>
+```
+
+To customize theme colors, edit the CSS variables in `app/globals.css`:
+```css
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+}
+```
 
 ## Future Enhancements
 
