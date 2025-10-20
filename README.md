@@ -111,6 +111,7 @@ nextjs_vtu/
 - `npm run build` - Build for production
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm test` - Run tests (requires Jest installation - see Testing section)
 
 ## Features Overview
 
@@ -491,6 +492,57 @@ For development and testing without hitting the VTU API:
    ```
 
 3. **Test with small amounts:** When testing with real API, use minimum amounts to minimize costs
+
+### Running Tests
+
+The project includes comprehensive unit tests for the VTUApiClient.
+
+**Setup (Optional):**
+
+1. Install test dependencies:
+   ```bash
+   npm install --save-dev jest @types/jest ts-jest
+   ```
+
+2. Run tests:
+   ```bash
+   npm test
+   ```
+
+3. Run tests in watch mode:
+   ```bash
+   npm test -- --watch
+   ```
+
+4. Generate coverage report:
+   ```bash
+   npm test -- --coverage
+   ```
+
+**Test Structure:**
+
+- `__tests__/vtuClient.test.ts` - Unit tests for VTUApiClient
+- Tests use mocked fetch to avoid hitting real API
+- Covers authentication, retries, error handling, and all major operations
+
+**Writing New Tests:**
+
+Follow the existing test patterns to add tests for new functionality:
+
+```typescript
+describe('New Feature', () => {
+  it('should work correctly', async () => {
+    // Mock fetch response
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+
+    const result = await client.newMethod();
+    expect(result.success).toBe(true);
+  });
+});
+```
 
 ## Design Philosophy
 
