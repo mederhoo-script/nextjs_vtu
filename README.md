@@ -111,6 +111,7 @@ nextjs_vtu/
 - `npm run build` - Build for production
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm test` - Run tests (requires Jest installation - see Testing section)
 
 ## Features Overview
 
@@ -131,16 +132,65 @@ Each service has a dedicated page with:
 
 ## VTU.ng API Integration
 
-This project includes a complete integration with the VTU.ng API v2, providing backend functionality for purchasing digital services.
+This project includes a complete MVP integration with the VTU.ng API v2, providing both backend and frontend functionality for purchasing digital services.
+
+### Features
+
+**Backend (VTUApiClient):**
+- ✅ JWT authentication with automatic token refresh and caching
+- ✅ Comprehensive error handling with VTU error codes
+- ✅ Retry logic for transient errors (wallet busy, rate limit, timeout)
+- ✅ Configurable request timeout and retry attempts
+- ✅ Support for all major VTU operations
+
+**Frontend:**
+- ✅ Functional forms for airtime and data purchase
+- ✅ Real-time wallet balance display
+- ✅ Dynamic data plan fetching based on network
+- ✅ Error and success message handling
+- ✅ Loading states and input validation
+
+**Security:**
+- ✅ Optional X-API-KEY header validation for internal API routes
+- ✅ Never exposes VTU credentials to frontend
+- ✅ All secrets managed via environment variables
 
 ### Environment Variables
 
-Required environment variables (see `.env.example`):
+**Required Variables:**
 
-- `VTU_BASE_URL` - Base URL for VTU.ng API (https://vtu.ng/wp-json)
+- `VTU_BASE_URL` - Base URL for VTU.ng API (default: https://vtu.ng/wp-json)
 - `VTU_USERNAME` - Your VTU.ng account username
 - `VTU_PASSWORD` - Your VTU.ng account password
+
+**Optional Variables:**
+
 - `VTU_USER_PIN` - Your VTU.ng user PIN for transaction authorization
+- `VTU_API_KEY` - VTU.ng API key (if using Token authentication instead of JWT)
+- `VTU_TIMEOUT` - Request timeout in milliseconds (default: 30000)
+- `VTU_MAX_RETRIES` - Maximum retry attempts for transient errors (default: 3)
+- `VTU_SERVER_API_KEY` - API key for protecting your internal API routes (RECOMMENDED)
+
+**Security Best Practices:**
+
+1. **Generate a strong server API key:**
+   ```bash
+   openssl rand -hex 32
+   ```
+   Add this to your `.env.local` as `VTU_SERVER_API_KEY`
+
+2. **Never commit secrets:**
+   - Use `.env.local` for development (already in .gitignore)
+   - Use your hosting platform's environment variables for production
+
+3. **Use the server API key:**
+   - If you set `VTU_SERVER_API_KEY`, all API routes will require an `x-api-key` header
+   - This prevents unauthorized access to your VTU API endpoints
+   - Example with API key:
+     ```bash
+     curl -X GET http://localhost:3000/api/vtu/balance \
+       -H "x-api-key: your_server_api_key_here"
+     ```
 
 ### API Routes
 
@@ -150,6 +200,10 @@ The following API routes are available for server-side integration:
 ```bash
 # Get account balance
 curl -X GET http://localhost:3000/api/vtu/balance
+
+# With API key protection
+curl -X GET http://localhost:3000/api/vtu/balance \
+  -H "x-api-key: your_server_api_key_here"
 ```
 
 #### Airtime Purchase
@@ -259,6 +313,27 @@ curl -X POST http://localhost:3000/api/vtu/requery \
   }'
 ```
 
+#### Transaction History
+```bash
+# Get transaction history
+curl -X GET "http://localhost:3000/api/vtu/transactions"
+
+# With pagination and filtering
+curl -X GET "http://localhost:3000/api/vtu/transactions?page=1&limit=20&status=successful"
+```
+
+#### Recharge Card Generation
+```bash
+# Generate recharge cards
+curl -X POST http://localhost:3000/api/vtu/recharge-cards \
+  -H "Content-Type: application/json" \
+  -d '{
+    "network": "mtn",
+    "amount": 100,
+    "quantity": 5
+  }'
+```
+
 ### Using the API with Node.js
 
 Example using the `fetch` API in Node.js:
@@ -332,7 +407,142 @@ The client handles:
 - JWT authentication with automatic token refresh
 - Token caching to minimize API calls
 - Type-safe API requests with TypeScript
-- Error handling
+- Comprehensive error handling with retry logic
+- Request timeouts and exponential backoff
+
+### Error Handling
+
+The VTU client includes comprehensive error handling:
+
+**Error Types:**
+
+1. **Authentication Errors** (401)
+   - Invalid credentials
+   - Expired token
+   - Solution: Verify VTU_USERNAME and VTU_PASSWORD
+
+2. **Validation Errors** (400)
+   - Missing required fields
+   - Invalid input format
+   - Solution: Check request payload matches API documentation
+
+3. **Transient Errors** (Automatically Retried)
+   - Wallet busy
+   - Rate limit exceeded
+   - Network timeouts
+   - The client will automatically retry with exponential backoff (up to VTU_MAX_RETRIES)
+
+4. **Server Errors** (500)
+   - VTU API service issues
+   - Solution: Wait and retry, or contact VTU support
+
+**Error Response Format:**
+
+```json
+{
+  "success": false,
+  "error": "Error message describing what went wrong"
+}
+```
+
+**VTU Error Codes:**
+
+The VTU API may return specific error codes in the response. Common codes include:
+- `INSUFFICIENT_BALANCE` - Wallet balance too low
+- `INVALID_VARIATION` - Invalid plan/variation code
+- `NETWORK_ERROR` - Network provider issue
+- `DUPLICATE_TRANSACTION` - Transaction already processed
+
+### Troubleshooting
+
+**Issue: "Failed to get access token"**
+- Check VTU_USERNAME and VTU_PASSWORD are correct
+- Verify your VTU.ng account is active
+- Check network connectivity
+
+**Issue: "Unauthorized: Invalid or missing API key"**
+- You have VTU_SERVER_API_KEY set but didn't provide x-api-key header
+- Solution: Add header or remove VTU_SERVER_API_KEY for development
+
+**Issue: "Request timeout"**
+- VTU API is slow or unresponsive
+- Solution: Increase VTU_TIMEOUT (default 30000ms)
+- Client will auto-retry transient errors
+
+**Issue: "Wallet busy" errors**
+- Multiple simultaneous transactions
+- Solution: Client automatically retries with exponential backoff
+- Adjust VTU_MAX_RETRIES if needed (default: 3)
+
+**Issue: Data plans not loading**
+- Verify network code matches VTU.ng network codes
+- Check /api/vtu/variations endpoint returns data
+- Try different network selection
+
+### Testing Without Real API Calls
+
+For development and testing without hitting the VTU API:
+
+1. **Mock the API routes:** Create mock responses in your API routes for testing
+2. **Use environment check:** Add conditional logic to return mock data in development:
+   ```typescript
+   if (process.env.NODE_ENV === 'development' && process.env.USE_MOCK_DATA === 'true') {
+     return mockData;
+   }
+   ```
+
+3. **Test with small amounts:** When testing with real API, use minimum amounts to minimize costs
+
+### Running Tests
+
+The project includes comprehensive unit tests for the VTUApiClient.
+
+**Setup (Optional):**
+
+1. Install test dependencies:
+   ```bash
+   npm install --save-dev jest @types/jest ts-jest
+   ```
+
+2. Run tests:
+   ```bash
+   npm test
+   ```
+
+3. Run tests in watch mode:
+   ```bash
+   npm test -- --watch
+   ```
+
+4. Generate coverage report:
+   ```bash
+   npm test -- --coverage
+   ```
+
+**Test Structure:**
+
+- `__tests__/vtuClient.test.ts` - Unit tests for VTUApiClient
+- Tests use mocked fetch to avoid hitting real API
+- Covers authentication, retries, error handling, and all major operations
+
+**Writing New Tests:**
+
+Follow the existing test patterns to add tests for new functionality:
+
+```typescript
+describe('New Feature', () => {
+  it('should work correctly', async () => {
+    // Mock fetch response
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+
+    const result = await client.newMethod();
+    expect(result.success).toBe(true);
+  });
+});
+```
 
 ## Design Philosophy
 
@@ -386,19 +596,163 @@ To customize theme colors, edit the CSS variables in `app/globals.css`:
 }
 ```
 
+## Architecture Overview
+
+### Backend Layer
+
+**VTUApiClient (`lib/vtuClient.ts`)**
+- TypeScript class wrapping all VTU.ng API endpoints
+- Handles authentication (JWT with /jwt-auth/v1/token endpoint, fallback to /wp/v2/users/login)
+- Token caching and automatic refresh
+- Retry logic with exponential backoff
+- Request timeout support
+- Type-safe interfaces for all operations
+
+**API Routes (`app/api/vtu/*/route.ts`)**
+- Server-side Next.js API routes
+- Never expose VTU credentials to client
+- Optional API key validation (VTU_SERVER_API_KEY)
+- Input validation and error handling
+- All routes follow consistent response format
+
+### Frontend Layer
+
+**Service Forms (`app/services/*/`)**
+- Client components with form state management
+- Real-time API integration
+- Error/success message handling
+- Input validation
+- Loading states
+
+**Shared Components (`components/`)**
+- WalletCard: Real-time balance display
+- ServiceCard, QuickActions, etc.: Reusable UI components
+
+### Security Architecture
+
+1. **Credentials never reach the browser:**
+   - All VTU API calls go through Next.js API routes
+   - Environment variables only accessible server-side
+
+2. **Optional API key protection:**
+   - Set VTU_SERVER_API_KEY to require x-api-key header
+   - Protects your internal API from unauthorized access
+
+3. **Rate limiting (future):**
+   - Can add rate limiting middleware to API routes
+   - Prevents abuse of your endpoints
+
+## Extending the MVP
+
+### Adding New Service Forms
+
+To add a functional form for other services (TV, electricity, etc.):
+
+1. **Create form component** (e.g., `app/services/tv/TVForm.tsx`):
+   ```typescript
+   'use client';
+   import { useState } from 'react';
+   
+   export default function TVForm() {
+     const [loading, setLoading] = useState(false);
+     const [error, setError] = useState('');
+     // ... form state
+     
+     const handleSubmit = async (e: React.FormEvent) => {
+       e.preventDefault();
+       setLoading(true);
+       
+       const response = await fetch('/api/vtu/tv', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ /* data */ })
+       });
+       
+       // ... handle response
+     };
+     
+     return (/* form JSX */);
+   }
+   ```
+
+2. **Update page to use form:**
+   ```typescript
+   // app/services/tv/page.tsx
+   import TVForm from './TVForm';
+   export default function TVPage() {
+     return <TVForm />;
+   }
+   ```
+
+### Adding New API Endpoints
+
+If VTU adds new endpoints:
+
+1. **Add interface and method to VTUClient:**
+   ```typescript
+   // lib/vtuClient.ts
+   export interface NewServiceRequest {
+     field1: string;
+     field2: number;
+   }
+   
+   async newService(data: NewServiceRequest): Promise<VTUApiResponse> {
+     return this.makeRequest('/api/v1/new-service', 'POST', data);
+   }
+   ```
+
+2. **Create API route:**
+   ```typescript
+   // app/api/vtu/new-service/route.ts
+   import { NextRequest, NextResponse } from 'next/server';
+   import { getVTUClient } from '@/lib/vtuClient';
+   import { validateApiKey } from '@/lib/apiKeyValidation';
+   
+   export async function POST(request: NextRequest) {
+     if (!validateApiKey(request)) {
+       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+     }
+     
+     const body = await request.json();
+     // Validate inputs...
+     
+     const client = getVTUClient();
+     const result = await client.newService(body);
+     
+     return NextResponse.json({ success: true, data: result });
+   }
+   ```
+
+### Production Deployment Checklist
+
+- [ ] Set all environment variables in production
+- [ ] Generate and set VTU_SERVER_API_KEY
+- [ ] Test all endpoints with real API credentials
+- [ ] Set up error monitoring (e.g., Sentry)
+- [ ] Add rate limiting to API routes
+- [ ] Enable HTTPS only
+- [ ] Set up logging for transactions
+- [ ] Configure CORS if needed
+- [ ] Add user authentication layer
+- [ ] Implement transaction history storage
+- [ ] Add wallet funding functionality
+
 ## Future Enhancements
 
 Potential features for future versions:
-- User authentication and profiles
-- Payment gateway integration
-- Real-time transaction processing
-- Transaction history with filtering
-- Wallet funding options
-- Referral system
-- Push notifications
-- API integration with VTU providers
-- Admin dashboard
-- Analytics and reporting
+- [ ] User authentication and profiles (NextAuth.js)
+- [ ] Payment gateway integration (Paystack, Flutterwave)
+- [ ] Database for transaction history (PostgreSQL, MongoDB)
+- [ ] Transaction history with filtering and export
+- [ ] Wallet funding options
+- [ ] Referral system with rewards
+- [ ] Push notifications (Web Push API)
+- [ ] Admin dashboard for monitoring
+- [ ] Analytics and reporting
+- [ ] Webhook handlers for transaction status updates
+- [ ] Rate limiting and request throttling
+- [ ] Comprehensive unit and integration tests
+- [ ] CI/CD pipeline setup
 
 ## Contributing
 

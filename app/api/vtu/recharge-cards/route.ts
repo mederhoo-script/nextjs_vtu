@@ -18,11 +18,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     // Validate required fields
-    if (!body.network || !body.phone || !body.amount) {
+    if (!body.network || !body.amount || !body.quantity) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Missing required fields: network, phone, amount',
+          error: 'Missing required fields: network, amount, quantity',
         },
         { status: 400 }
       );
@@ -39,11 +39,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate quantity
+    if (typeof body.quantity !== 'number' || body.quantity <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Quantity must be a positive number',
+        },
+        { status: 400 }
+      );
+    }
+
     const client = getVTUClient();
-    const result = await client.purchaseAirtime({
+    const result = await client.generateRechargeCards({
       network: body.network,
-      phone: body.phone,
       amount: body.amount,
+      quantity: body.quantity,
+      pin_type: body.pin_type,
     });
     
     return NextResponse.json({
@@ -51,11 +63,11 @@ export async function POST(request: NextRequest) {
       data: result,
     });
   } catch (error) {
-    console.error('Airtime API error:', error);
+    console.error('Recharge cards API error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to purchase airtime',
+        error: error instanceof Error ? error.message : 'Failed to generate recharge cards',
       },
       { status: 500 }
     );
