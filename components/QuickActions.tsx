@@ -7,14 +7,14 @@ export default function QuickActions() {
   ];
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm mb-6 transition-colors">
       <div className="flex justify-between items-center overflow-x-auto gap-4">
         {actions.map((action, index) => (
           <button
             key={index}
             className="flex flex-col items-center gap-2 min-w-[70px] hover:opacity-80 transition"
           >
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-2xl">
+            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-2xl">
               {action.icon}
             </div>
             <span className={`text-xs font-medium ${action.color}`}>{action.label}</span>

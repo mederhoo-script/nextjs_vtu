@@ -9,24 +9,24 @@ export default function ExamPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
+      <header className="bg-white dark:bg-gray-900 shadow-sm transition-colors">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
-            <Link href="/" className="mr-4 text-gray-600 hover:text-gray-900">
+            <Link href="/" className="mr-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
               ← Back
             </Link>
-            <h1 className="text-xl font-bold text-gray-900">Exam Pins</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Exam Pins</h1>
           </div>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors">
           <form className="space-y-6">
             {/* Exam Type Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 Select Exam Type
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -34,7 +34,7 @@ export default function ExamPage() {
                   <button
                     key={exam.name}
                     type="button"
-                    className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 transition"
+                    className="flex items-center gap-3 p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-purple-500 transition"
                   >
                     <div className={`w-12 h-12 ${exam.color} rounded-lg flex items-center justify-center text-2xl text-white`}>
                       {exam.icon}
@@ -50,7 +50,7 @@ export default function ExamPage() {
 
             {/* Quantity */}
             <div>
-              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Quantity
               </label>
               <input
@@ -58,20 +58,20 @@ export default function ExamPage() {
                 id="quantity"
                 min="1"
                 defaultValue="1"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400"
               />
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Email Address
               </label>
               <input
                 type="email"
                 id="email"
                 placeholder="your@email.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400"
               />
               <p className="text-xs text-gray-500 mt-1">Pins will be sent to this email</p>
             </div>
@@ -88,8 +88,8 @@ export default function ExamPage() {
 
         {/* Info Card */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">💡 Important Information</h3>
-          <ul className="text-sm text-blue-800 space-y-1">
+          <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">💡 Important Information</h3>
+          <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
             <li>• Pins are delivered instantly to your email</li>
             <li>• Keep your pins secure and confidential</li>
             <li>• Check spam folder if not received in inbox</li>

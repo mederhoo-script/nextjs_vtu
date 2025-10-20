@@ -9,24 +9,24 @@ export default function EducationPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
+      <header className="bg-white dark:bg-gray-900 shadow-sm transition-colors">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
-            <Link href="/" className="mr-4 text-gray-600 hover:text-gray-900">
+            <Link href="/" className="mr-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
               ← Back
             </Link>
-            <h1 className="text-xl font-bold text-gray-900">Education Services</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Education Services</h1>
           </div>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors">
           <form className="space-y-6">
             {/* Service Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 Select Service
               </label>
               <div className="space-y-2">
@@ -48,25 +48,25 @@ export default function EducationPage() {
 
             {/* Exam Number */}
             <div>
-              <label htmlFor="examNumber" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="examNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Examination Number
               </label>
               <input
                 type="text"
                 id="examNumber"
                 placeholder="Enter your exam number"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400"
               />
             </div>
 
             {/* Exam Year */}
             <div>
-              <label htmlFor="year" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="year" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Examination Year
               </label>
               <select
                 id="year"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400"
               >
                 <option>2024</option>
                 <option>2023</option>
@@ -87,8 +87,8 @@ export default function EducationPage() {
 
         {/* Info Card */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">💡 Important Information</h3>
-          <ul className="text-sm text-blue-800 space-y-1">
+          <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">💡 Important Information</h3>
+          <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
             <li>• Result checker PIN sent instantly</li>
             <li>• Verify exam number before payment</li>
             <li>• Contact support for any issues</li>
